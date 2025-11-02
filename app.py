@@ -143,7 +143,7 @@ if st.button("📄 Generate A3 PDF"):
                                     fill=False, lw=LW_BORDER))
 
     # Site placement
-    inner_pad = 8.0
+    inner_pad = 4.0
     usable_w = DRAW_W - 2*inner_pad; usable_h = DRAW_H - 2*inner_pad
     mm_per_m_use = min(usable_w/site_width_m, usable_h/site_length_m)
     site_w_mm = site_width_m*mm_per_m_use; site_h_mm = site_length_m*mm_per_m_use
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
