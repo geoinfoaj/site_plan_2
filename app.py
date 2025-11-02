@@ -122,7 +122,7 @@ if st.button("📄 Generate A3 PDF"):
     PAGE_W_MM, PAGE_H_MM = 420.0, 297.0
     FIG_W_IN, FIG_H_IN = PAGE_W_MM/25.4, PAGE_H_MM/25.4
     LEFT, RIGHT, TOP, BOTTOM = 12, 12, 12, 12
-    DRAW_W = PAGE_W_MM
+    DRAW_W = PAGE_W_MM*0.62
     DRAW_H = PAGE_H_MM - TOP - BOTTOM
     DRAW_X = LEFT + 2
     DRAW_Y = BOTTOM
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
