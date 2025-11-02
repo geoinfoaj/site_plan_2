@@ -327,13 +327,14 @@ if st.button("📄 Generate A3 PDF"):
     # --- Export PDF ---
     pdf_buf = io.BytesIO()
     with PdfPages(pdf_buf) as pdf:
-        pdf.savefig(fig, bbox_inches="tight", orientation="landscape", dpi=300)
+        pdf.savefig(fig, bbox_inches="tight", orientation="landscape", dpi=600)
     pdf_buf.seek(0)
 
     st.download_button("⬇️ Download A3 PDF", data=pdf_buf,
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
