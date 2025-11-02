@@ -14,7 +14,7 @@ except Exception:
 
 st.set_page_config(page_title="Single Site Plan — Page 1 (A3)", layout="centered")
 
-st.header("🏗️ *Anantha* Single Site Plan — Page 1 (A3)")
+st.header("🏗️ Anantha Single Site Plan — (A3)")
 st.markdown("Enter all details below, then click **Generate A3 PDF**.")
 
 # ----------- Site Details -----------
@@ -46,8 +46,8 @@ for side in ["North", "South", "East", "West"]:
 
 # ----------- Key Plan Map -----------
 st.subheader("🗺️ Key Plan — Click on map to set site location")
-kp_radius_m = st.number_input("Key plan buffer radius (m)", min_value=50, value=200, step=10)
-kp_zoom = st.slider("Map Zoom", min_value=10, max_value=20, value=18, step=1)
+kp_radius_m = 50
+kp_zoom = 18
 
 default_center = (12.9716, 77.5946)
 m = folium.Map(location=default_center, zoom_start=kp_zoom, control_scale=True)
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
