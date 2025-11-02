@@ -221,7 +221,7 @@ if st.button("Generate A3 PDF"):
     ax.set_aspect("equal"); ax.axis("off")
 
     # adjusted font sizes and lighter line weights for blueprint feel
-    F_TITLE = 9.5; F_LABEL = 8.5; F_BODY = 6.5; F_COND = 5.5
+    F_TITLE = 9.5; F_LABEL = 8.5; F_BODY = 6.5; F_COND = 4.5
     LW_BORDER = 0.25; LW_BOX = 0.25; LW_SITE = 0.6
 
     # page border
@@ -387,6 +387,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
