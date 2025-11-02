@@ -297,9 +297,9 @@ if st.button("📄 Generate A3 PDF"):
             ha="left", va="bottom", fontsize=5)
     cond_y = gc_y_top
     for cond in GENERAL_CONDITIONS:
-        wrapped = textwrap.fill(cond, width=70)
+        wrapped = textwrap.fill(cond, width=60)
         ax.text(gc_x, cond_y, wrapped, ha="left", va="top", fontsize=F_COND)
-        cond_y -= 4.0
+        #cond_y -= 4.0
 
     note_y = cond_y 
     ax.text(gc_x, note_y, "NOTE", fontsize=F_LABEL, weight="bold")
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
