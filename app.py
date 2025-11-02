@@ -54,6 +54,43 @@ m = folium.Map(location=default_center, zoom_start=kp_zoom, control_scale=True)
 folium.TileLayer("openstreetmap").add_to(m)
 folium.LatLngPopup().add_to(m)
 
+def latlon_to_tile_xy(lat_deg, lon_deg, zoom):
+    lat_rad = math.radians(lat_deg)
+    n = 2.0 ** zoom
+    xtile = (lon_deg + 180.0) / 360.0 * n
+    ytile = (1.0 - math.log(math.tan(lat_rad) + 1 / math.cos(lat_rad)) / math.pi) / 2.0 * n
+    return xtile, ytile
+
+def fetch_tile(z, x, y):
+    url = f"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    headers = {"User-Agent": "SingleSitePlanApp/1.0"}
+    try:
+        r = requests.get(url, headers=headers, timeout=8)
+        r.raise_for_status()
+        return Image.open(io.BytesIO(r.content)).convert("RGBA")
+    except Exception:
+        return Image.new("RGBA", (256, 256), (240, 240, 240, 255))
+
+def make_keyplan_image(lat, lon, zoom=16, radius_m=200):
+    xtile, ytile = latlon_to_tile_xy(lat, lon, zoom)
+    size = 256
+    x_c, y_c = int(xtile), int(ytile)
+    stitched = Image.new("RGBA", (3*size, 3*size))
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            img = fetch_tile(zoom, x_c+dx, y_c+dy)
+            stitched.paste(img, ((dx+1)*size, (dy+1)*size))
+    R = 6378137.0
+    mpp = (math.cos(math.radians(lat)) * 2 * math.pi * R) / (256 * (2**zoom))
+    radius_px = int(radius_m / mpp)
+    cx = (xtile - x_c + 1) * size
+    cy = (ytile - y_c + 1) * size
+    draw = ImageDraw.Draw(stitched)
+    draw.ellipse([cx - radius_px, cy - radius_px, cx + radius_px, cy + radius_px],
+                 outline=(200, 0, 0, 255), width=6)
+    draw.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=(0, 0, 0))
+    return stitched
+
 if "marker" not in st.session_state:
     st.session_state.marker = None
 
@@ -165,10 +202,20 @@ if st.button("📄 Generate A3 PDF"):
     ax.text(key_x + key_w/2, key_y + key_h + 4, "KEY PLAN (NOT TO SCALE)",
             ha="center", va="bottom", fontsize=F_LABEL, weight="bold")
     if picked_latlon:
-        ax.text(key_x + key_w/2, key_y + key_h/2, "Map Preview", ha="center", va="center", fontsize=F_BODY)
-    else:
-        ax.text(key_x + key_w/2, key_y + key_h/2, "KEY PLAN (To be inserted here)",
-                ha="center", va="center", fontsize=F_BODY, style="italic", color="gray")
+    try:
+        lat, lon = picked_latlon
+        kimg = make_keyplan_image(lat, lon, zoom=kp_zoom, radius_m=kp_radius_m)
+        kimg = kimg.resize((int(key_w*5), int(key_h*5)), Image.LANCZOS)
+        ax.imshow(kimg, extent=(key_x+1, key_x+key_w-1, key_y+1, key_y+key_h-1))
+    except Exception:
+        ax.text(key_x + key_w/2, key_y + key_h/2,
+                "Key Plan (Error loading map)", ha="center", va="center",
+                fontsize=F_BODY, style="italic", color="red")
+else:
+    ax.text(key_x + key_w/2, key_y + key_h/2,
+            "KEY PLAN (To be inserted here)",
+            ha="center", va="center", fontsize=F_BODY, style="italic", color="gray")
+
     # North arrow
     na_x = key_x + key_w - 8; na_y = key_y + key_h - 18
     ax.arrow(na_x, na_y, 0, 10, head_width=3, head_length=4, fc="black", ec="black", lw=0.6)
@@ -284,3 +331,4 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
