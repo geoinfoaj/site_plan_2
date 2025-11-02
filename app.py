@@ -249,9 +249,17 @@ if st.button("Generate A3 PDF"):
     site_y = DRAWING_ORIGIN_Y + inner_pad + (usable_h - site_h_mm) / 2
 
     # site rectangle
-    # Site boundary with custom dashed line pattern
-    mpatches.Rectangle((site_x, site_y), site_w_mm, site_h_mm, fill=False,
-                   lw=LW_SITE, linestyle=(0, (10, 3, 2, 3)))
+   # Site boundary with custom dashed line pattern
+    site_rect = mpatches.Rectangle(
+        (site_x, site_y),
+        site_w_mm,
+        site_h_mm,
+        fill=False,
+        lw=LW_SITE,
+        linestyle=(0, (10, 3, 2, 3)),   # custom dash: ____ _ _ ____ pattern
+    )
+    ax.add_patch(site_rect)
+
 
 
 
@@ -391,6 +399,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
