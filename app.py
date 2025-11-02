@@ -256,7 +256,7 @@ if st.button("Generate A3 PDF"):
         site_h_mm,
         fill=False,
         lw=LW_SITE,
-        linestyle=(0, (12, 4, 3, 4, 3, 4)),   # custom dash: ____ _ _ ____ pattern
+        linestyle=(0, (16, 5, 4, 5, 4, 5)),   # custom dash: ____ _ _ ____ pattern
     )
     ax.add_patch(site_rect)
 
@@ -399,6 +399,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
