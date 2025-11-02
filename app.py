@@ -176,7 +176,7 @@ DRAWING_AREA_W = PAGE_W_MM * 0.62
 DRAWING_AREA_H = PAGE_H_MM - TOP_MARGIN - BOTTOM_MARGIN - 36
 # move the left drawing area down a bit to create header breathing space
 DRAWING_ORIGIN_X = LEFT_MARGIN + 2
-DRAWING_ORIGIN_Y = BOTTOM_MARGIN + 36 - 15
+DRAWING_ORIGIN_Y = BOTTOM_MARGIN + 36
 INFO_COL_X = DRAWING_ORIGIN_X + DRAWING_AREA_W + 8
 INFO_COL_W = PAGE_W_MM - INFO_COL_X - RIGHT_MARGIN
 TITLEBLOCK_H = 35.0; TITLEBLOCK_Y = BOTTOM_MARGIN
@@ -387,6 +387,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
