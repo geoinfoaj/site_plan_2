@@ -138,7 +138,7 @@ if st.button("📄 Generate A3 PDF"):
     ax.set_aspect("equal"); ax.axis("off")
 
     # Border
-    ax.add_patch(mpatches.Rectangle((LEFT/2, BOTTOM),
+    ax.add_patch(mpatches.Rectangle((LEFT/2, BOTTOM/2),
                                     PAGE_W_MM-LEFT, PAGE_H_MM-BOTTOM,
                                     fill=False, lw=LW_BORDER))
 
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
