@@ -108,7 +108,7 @@ if picked_latlon:
         location=(lat, lon),
         radius=kp_radius_m,
         color="red", weight=4,
-        fill=True, fill_color="#ff0000", fill_opacity=0.25
+        fill=True, fill_color="#ff0000", fill_opacity=0.80
     ).add_to(m2)
     st_folium(m2, width=700, height=400)
     st.success(f"📍 Location set: {lat:.6f}, {lon:.6f}")
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
