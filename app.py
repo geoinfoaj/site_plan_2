@@ -94,7 +94,7 @@ def make_keyplan_image(lat, lon, zoom=16, radius_m=200):
 if "marker" not in st.session_state:
     st.session_state.marker = None
 
-clicked = st_folium(m, width=350, height=200)
+clicked = st_folium(m, width=700, height=400)
 if clicked and clicked.get("last_clicked"):
     lat, lon = clicked["last_clicked"]["lat"], clicked["last_clicked"]["lng"]
     st.session_state.marker = (lat, lon)
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
