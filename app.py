@@ -318,6 +318,19 @@ if st.button("Generate A3 PDF"):
     ax.text(dv2 + 4, tb_y + tb_h - 25, f"WARD NO. : {ward_no}    CONSTITUENCY : {constituency}", fontsize=F_COND)
     ax.text(PAGE_W_MM - RIGHT_MARGIN - 4, tb_y + 3, "All Dimensions in metres.", fontsize=F_COND, ha="right")
 
+        # --- Save PDF & show in Streamlit ---
     pdf_buf = io.BytesIO()
     with PdfPages(pdf_buf) as pdf:
-        pdf.savefig(fig, bbox_inches="tight", orientation="
+        pdf.savefig(fig, bbox_inches="tight", orientation="landscape")
+    pdf_buf.seek(0)
+
+    st.success("✅ A3 PDF (Page 1) generated successfully.")
+    st.download_button(
+        "⬇️ Download A3 PDF",
+        data=pdf_buf,
+        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
+        mime="application/pdf",
+    )
+    st.pyplot(fig)
+
+
