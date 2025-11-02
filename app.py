@@ -240,7 +240,7 @@ if st.button("📄 Generate A3 PDF"):
                 fontsize=F_BODY, style="italic", color="gray")
 
     # --- LAND USE ANALYSIS ---
-    lut_x, lut_y = INFO_X, adlr_y - 10
+    lut_x, lut_y = INFO_X, adlr_y 
     ax.text(lut_x + 40, lut_y + 15, "LAND USE ANALYSIS",
             ha="center", va="bottom", fontsize=F_LABEL, weight="bold")
     headers = ["SL.No", "PARTICULARS", "AREA (Sq.m)", "%"]
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
