@@ -211,8 +211,8 @@ if st.button("📄 Generate A3 PDF"):
         ax.text(key_x + key_w/2, key_y + key_h/2,
                 "Key Plan (Error loading map)", ha="center", va="center",
                 fontsize=F_BODY, style="italic", color="red")
-else:
-    ax.text(key_x + key_w/2, key_y + key_h/2,
+    else:
+        ax.text(key_x + key_w/2, key_y + key_h/2,
             "KEY PLAN (To be inserted here)",
             ha="center", va="center", fontsize=F_BODY, style="italic", color="gray")
 
