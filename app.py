@@ -335,7 +335,7 @@ if st.button("Generate A3 PDF"):
     gc_y_top = tbl_start_y - (len(rows) + 0.8) * row_h - 7
     ax.text(gc_x + (INFO_COL_W / 2 - 6), gc_y_top, "GENERAL CONDITIONS OF APPROVAL", ha="center", fontsize=F_LABEL, weight="bold")
     cond_y = gc_y_top - 6
-    cond_spacing = 6
+    cond_spacing = 9
     for i, cond in enumerate(GENERAL_CONDITIONS):
         wrapped = textwrap.fill(cond, width=60)
         ax.text(gc_x + 2, cond_y - i * cond_spacing, wrapped, ha="left", va="top", fontsize=F_COND)
@@ -387,6 +387,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
