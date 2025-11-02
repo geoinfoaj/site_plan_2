@@ -63,7 +63,7 @@ total_builtup = st.sidebar.number_input("Total Built-up Area (Sq.m)", min_value=
 st.sidebar.markdown("---")
 st.sidebar.header("Key Plan (choose location)")
 kp_radius_m = st.sidebar.number_input("Key plan buffer radius (m)", min_value=50, value=200, step=10)
-kp_zoom = st.sidebar.slider("Map zoom (10-16)", 10, 16, 14)
+kp_zoom = st.sidebar.slider("Map zoom (16-27)", 16, 18, 20, 24, 27)
 
 # ---------------- Hidden backend fields (kept but not shown) ----------------
 ADLR_SKETCH = ""  # preserved in code for automation but not asked on UI
@@ -332,7 +332,7 @@ if st.button("Generate A3 PDF"):
 
     # GENERAL CONDITIONS block (move up a bit to avoid clipping)
     gc_x = INFO_COL_X + 4
-    gc_y_top = tbl_start_y - (len(rows) + 0.8) * row_h - 10
+    gc_y_top = tbl_start_y - (len(rows) + 0.8) * row_h - 7
     ax.text(gc_x + (INFO_COL_W / 2 - 6), gc_y_top, "GENERAL CONDITIONS OF APPROVAL", ha="center", fontsize=F_LABEL, weight="bold")
     cond_y = gc_y_top - 6
     cond_spacing = 3.8
@@ -387,3 +387,4 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
