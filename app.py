@@ -14,7 +14,7 @@ except Exception:
 
 st.set_page_config(page_title="Single Site Plan — Page 1 (A3)", layout="centered")
 
-st.header("🏗️ Single Site Plan — Page 1 (A3)")
+st.header("🏗️ *Anantha* Single Site Plan — Page 1 (A3)")
 st.markdown("Enter all details below, then click **Generate A3 PDF**.")
 
 # ----------- Site Details -----------
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
