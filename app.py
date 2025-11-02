@@ -201,20 +201,20 @@ if st.button("📄 Generate A3 PDF"):
     ax.add_patch(mpatches.Rectangle((key_x, key_y), key_w, key_h, fill=False, lw=0.25))
     ax.text(key_x + key_w/2, key_y + key_h + 4, "KEY PLAN (NOT TO SCALE)",
             ha="center", va="bottom", fontsize=F_LABEL, weight="bold")
-    if picked_latlon:
-    try:
-        lat, lon = picked_latlon
-        kimg = make_keyplan_image(lat, lon, zoom=kp_zoom, radius_m=kp_radius_m)
-        kimg = kimg.resize((int(key_w*5), int(key_h*5)), Image.LANCZOS)
-        ax.imshow(kimg, extent=(key_x+1, key_x+key_w-1, key_y+1, key_y+key_h-1))
-    except Exception:
-        ax.text(key_x + key_w/2, key_y + key_h/2,
-                "Key Plan (Error loading map)", ha="center", va="center",
-                fontsize=F_BODY, style="italic", color="red")
-    else:
-        ax.text(key_x + key_w/2, key_y + key_h/2,
-            "KEY PLAN (To be inserted here)",
-            ha="center", va="center", fontsize=F_BODY, style="italic", color="gray")
+        if picked_latlon:
+        try:
+            lat, lon = picked_latlon
+            kimg = make_keyplan_image(lat, lon, zoom=kp_zoom, radius_m=kp_radius_m)
+            kimg = kimg.resize((int(key_w*5), int(key_h*5)), Image.LANCZOS)
+            ax.imshow(kimg, extent=(key_x+1, key_x+key_w-1, key_y+1, key_y+key_h-1))
+        except Exception:
+            ax.text(key_x + key_w/2, key_y + key_h/2,
+                    "Key Plan (Error loading map)", ha="center", va="center",
+                    fontsize=F_BODY, style="italic", color="red")
+        else:
+            ax.text(key_x + key_w/2, key_y + key_h/2,
+                "KEY PLAN (To be inserted here)",
+                ha="center", va="center", fontsize=F_BODY, style="italic", color="gray")
 
     # North arrow
     na_x = key_x + key_w - 8; na_y = key_y + key_h - 18
@@ -331,4 +331,5 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
