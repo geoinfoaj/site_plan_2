@@ -1,5 +1,7 @@
 streamlit
+streamlit-folium
+folium
 matplotlib
 pillow
 requests
-folium
+
