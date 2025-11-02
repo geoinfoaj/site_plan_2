@@ -63,7 +63,7 @@ total_builtup = st.sidebar.number_input("Total Built-up Area (Sq.m)", min_value=
 st.sidebar.markdown("---")
 st.sidebar.header("Key Plan (choose location)")
 kp_radius_m = st.sidebar.number_input("Key plan buffer radius (m)", min_value=50, value=200, step=10)
-kp_zoom = st.sidebar.slider("Map zoom (16-27)", 16, 18, 20, 24, 27)
+kp_zoom = st.sidebar.slider("Map zoom (10–18)", min_value=10, max_value=18, value=14, step=1)
 
 # ---------------- Hidden backend fields (kept but not shown) ----------------
 ADLR_SKETCH = ""  # preserved in code for automation but not asked on UI
@@ -387,4 +387,5 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
