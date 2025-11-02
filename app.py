@@ -1,13 +1,11 @@
 import io, math, textwrap, requests
-from typing import Optional
 from PIL import Image, ImageDraw
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib as mpl
 
-# Try folium
+# Try folium for map
 try:
     from streamlit_folium import st_folium
     import folium
@@ -15,13 +13,12 @@ try:
 except Exception:
     FOLIUM_OK = False
 
-# --- Streamlit page setup ---
+# --- Page setup ---
 st.set_page_config(page_title="Single Site Plan — Page 1 (A3)", layout="centered")
-
 st.header("🏗️ Single Site Plan — Page 1 (A3)")
 st.markdown("Enter all details below, then click **Generate A3 PDF**.")
 
-# --- Site details ---
+# ---------------- SITE DETAILS ----------------
 st.subheader("🧾 Site Details")
 survey_no = st.text_input("Survey Number (SY. NO.)")
 village = st.text_input("Village")
@@ -30,13 +27,13 @@ epid = st.text_input("EPID (E Khata number)")
 ward_no = st.text_input("Ward Number")
 constituency = st.text_input("Constituency Name")
 
-# --- Site dimensions ---
+# ---------------- DIMENSIONS ----------------
 st.subheader("📐 Plot Dimensions")
 site_length_m = st.number_input("Site Length (m)", min_value=0.1, value=15.0)
 site_width_m = st.number_input("Site Width (m)", min_value=0.1, value=12.0)
 total_builtup = st.number_input("Total Built-up Area (Sq.m)", min_value=0.0, value=0.0, step=1.0)
 
-# --- Roads section ---
+# ---------------- ROADS ----------------
 st.subheader("🚗 Roads Around the Site")
 road_info = {}
 for side in ["North", "South", "East", "West"]:
@@ -48,7 +45,7 @@ for side in ["North", "South", "East", "West"]:
                                 value=6.0 if has_road else 0.0, step=0.5, key=f"{side}_width")
     road_info[side.lower()] = {"exists": has_road, "width": width}
 
-# --- Map section ---
+# ---------------- MAP ----------------
 st.subheader("🗺️ Key Plan — Click on map to set site location")
 kp_radius_m = st.number_input("Key plan buffer radius (m)", min_value=50, value=200, step=10)
 kp_zoom = st.slider("Map Zoom", min_value=10, max_value=20, value=18, step=1)
@@ -83,7 +80,7 @@ if picked_latlon:
     st_folium(m2, width=700, height=400)
     st.success(f"📍 Location set: {lat:.6f}, {lon:.6f}")
 
-# --- PDF generation ---
+# ---------------- GENERATE PDF ----------------
 if st.button("📄 Generate A3 PDF"):
     PAGE_W_MM, PAGE_H_MM = 420.0, 297.0
     FIG_W_IN, FIG_H_IN = PAGE_W_MM/25.4, PAGE_H_MM/25.4
@@ -103,12 +100,12 @@ if st.button("📄 Generate A3 PDF"):
     ax.set_xlim(0, PAGE_W_MM); ax.set_ylim(0, PAGE_H_MM)
     ax.set_aspect("equal"); ax.axis("off")
 
-    # Border
+    # --- Page border ---
     ax.add_patch(mpatches.Rectangle((LEFT/2, BOTTOM/2),
                                     PAGE_W_MM-LEFT, PAGE_H_MM-BOTTOM,
                                     fill=False, lw=LW_BORDER))
 
-    # Site placement
+    # --- Site placement ---
     inner_pad = 8.0
     usable_w = DRAW_W - 2*inner_pad; usable_h = DRAW_H - 2*inner_pad
     mm_per_m_use = min(usable_w/site_width_m, usable_h/site_length_m)
@@ -116,7 +113,7 @@ if st.button("📄 Generate A3 PDF"):
     site_x = DRAW_X + inner_pad + (usable_w - site_w_mm)/2
     site_y = DRAW_Y + inner_pad + (usable_h - site_h_mm)/2
 
-    # Site rectangle (dashed)
+    # --- Site rectangle (dashed) ---
     ax.add_patch(
         mpatches.Rectangle(
             (site_x, site_y), site_w_mm, site_h_mm,
@@ -124,7 +121,7 @@ if st.button("📄 Generate A3 PDF"):
         )
     )
 
-    # --- Road Drawing (multi-side) ---
+    # --- Road bands & labels (1–4 sides) ---
     for side, info in road_info.items():
         if not info["exists"]: continue
         w_m = info["width"]
@@ -142,25 +139,56 @@ if st.button("📄 Generate A3 PDF"):
             rx, ry, rw, rh = site_x - road_band, site_y, road_band, site_h_mm
             rot, txtx, txty = 90, rx+rw/2, ry+rh/2
         ax.add_patch(
-            mpatches.Rectangle((rx, ry), rw, rh,
-                               facecolor="#e0e0e0", edgecolor="black",
-                               lw=0.4, hatch="////")
+            mpatches.Rectangle((rx, ry), rw, rh, facecolor="#e0e0e0",
+                               edgecolor="black", lw=0.4, hatch="////")
         )
+        label_offset = 3 * (1000.0 / SCALE)
+        if side == "north": txty += road_band/2 + label_offset
+        elif side == "south": txty -= road_band/2 + label_offset
+        elif side == "east": txtx += road_band/2 + label_offset
+        elif side == "west": txtx -= road_band/2 + label_offset
         ax.text(txtx, txty,
                 f"{side.title()} ({w_m:.1f} m ROAD)",
                 ha="center", va="center", fontsize=F_BODY, rotation=rot)
 
-    # --- Labels ---
-    ax.text(site_x + site_w_mm/2, site_y + site_h_mm + 22,
+    # --- Site label ---
+    ax.text(site_x + site_w_mm/2, site_y + site_h_mm + 30,
             f"SITE (SY.NO. {survey_no})",
             ha="center", va="bottom", fontsize=F_TITLE, weight="bold")
 
-    # --- Land Use Analysis Table Placeholder ---
-    # (Matches sample structure)
-    ax.text(DRAW_X + DRAW_W + 50, PAGE_H_MM - 60,
-            "LAND USE ANALYSIS", ha="center", fontsize=F_LABEL, weight="bold")
+    # ---------------- LAND USE ANALYSIS ----------------
+    INFO_COL_X = DRAW_X + DRAW_W + 15
+    lut_x = INFO_COL_X
+    lut_y = PAGE_H_MM - 80
+    ax.text(lut_x + 40, lut_y + 15, "LAND USE ANALYSIS",
+            ha="center", va="bottom", fontsize=F_LABEL, weight="bold")
 
-    # --- General Conditions + Notes (as per GBA sample) ---
+    headers = ["SL.No", "PARTICULARS", "AREA (Sq.m)", "%"]
+    col_w = [12, 55, 30, 20]
+    row_h = 6.5
+    tbl_x, tbl_y = lut_x, lut_y
+    xcur = tbl_x
+    for i, h in enumerate(headers):
+        ax.text(xcur + col_w[i]/2, tbl_y, h,
+                ha="center", va="bottom", fontsize=F_COND, weight="bold")
+        xcur += col_w[i]
+
+    rows = [
+        ["1", "SITE AREA", f"{site_width_m*site_length_m:.1f}", "100.00"],
+        ["2", "TOTAL SITE AREA", f"{site_width_m*site_length_m:.1f}", "100.00"]
+    ]
+    for r_idx, row in enumerate(rows):
+        y = tbl_y - (r_idx + 1)*row_h
+        xcur = tbl_x
+        for i, val in enumerate(row):
+            ax.text(xcur + col_w[i]/2, y, val,
+                    ha="center", va="top", fontsize=F_COND)
+            xcur += col_w[i]
+    ax.add_patch(mpatches.Rectangle(
+        (tbl_x - 1.5, tbl_y - (len(rows)+1)*row_h),
+        sum(col_w)+3, (len(rows)+1.2)*row_h, fill=False, lw=0.25))
+
+    # ---------------- GENERAL CONDITIONS ----------------
     GENERAL_CONDITIONS = [
         "1. The single plot layout plan is approved based on the survey sketch certified by the Assistant Director of Land Records.",
         "2. Building construction shall be undertaken only after obtaining approval for the building plan from the city corporation as per the approved single site layout plan.",
@@ -174,7 +202,7 @@ if st.button("📄 Generate A3 PDF"):
         "10. No Objection Certificates/Approvals for the building plan should be obtained from the competent authorities prior to construction of building on the approved single site.",
         "11. Sewage shall not be discharged into open spaces/vacant areas but should be reused for gardening, cleaning of common areas and various other uses.",
         "12. If the owner wishes to modify the single site layout approval to multi-plot residential layout, the owner shall submit a request to the Greater Bengaluru Authority and obtain approval for the multi-plot residential layout plan as per the zoning regulations.",
-        "13. One tree for every 240.0 sq.m. of the total floor area shall be planted and nurtured at the site in question.",
+        "13. One tree for every 240.0 sq.m of the total floor area shall be planted and nurtured at the site in question.",
         "14. Prior permission should be obtained from the competent authority before constructing a culvert on the storm water drain between the land in question and the existing road attached to it if any.",
         "15. To abide by such other conditions as may be imposed by the Authority from time to time."
     ]
@@ -186,29 +214,30 @@ if st.button("📄 Generate A3 PDF"):
         "4. This single plot plan is issued vide number ***/***/***-******* dated : **.**.****."
     ]
 
-    # Render General Conditions
-    gc_x, gc_y_top = DRAW_X + DRAW_W + 10, 130
-    ax.text(gc_x + 50, gc_y_top + 20, "GENERAL CONDITIONS OF APPROVAL",
-            ha="center", va="bottom", fontsize=F_LABEL, weight="normal")
-    y_cursor = gc_y_top
-    cond_spacing = 4.2
+    # General Conditions block
+    gc_x, gc_y_top = INFO_COL_X, 125
+    ax.text(gc_x, gc_y_top + 15, "GENERAL CONDITIONS OF APPROVAL",
+            ha="left", va="bottom", fontsize=F_LABEL, weight="bold")
+    cond_y = gc_y_top - 5
+    cond_spacing = 4.0
     for cond in GENERAL_CONDITIONS:
         wrapped = textwrap.fill(cond, width=58)
-        ax.text(gc_x, y_cursor, wrapped, ha="left", va="top", fontsize=F_COND)
-        y_cursor -= cond_spacing
+        ax.text(gc_x, cond_y, wrapped, ha="left", va="top", fontsize=F_COND)
+        cond_y -= cond_spacing
 
     # Notes
-    ax.text(gc_x, y_cursor - 8, "NOTE", fontsize=F_LABEL, weight="bold")
+    note_y = cond_y - 8
+    ax.text(gc_x, note_y, "NOTE", fontsize=F_LABEL, weight="bold")
     for i, note in enumerate(NOTE_TEXT):
-        ax.text(gc_x, y_cursor - 12 - (i * 4.2), note, fontsize=F_COND, ha="left")
+        ax.text(gc_x, note_y - (i + 1) * 4.0, note, fontsize=F_COND, ha="left")
 
-    # --- Title block ---
+    # ---------------- TITLE BLOCK ----------------
     tb_x, tb_y, tb_w, tb_h = LEFT, BOTTOM, PAGE_W_MM - LEFT - RIGHT, 35
     ax.add_patch(mpatches.Rectangle((tb_x, tb_y), tb_w, tb_h, fill=False, lw=LW_BOX))
     dv1, dv2 = tb_x + tb_w*0.48, tb_x + tb_w*0.70
     ax.plot([dv1,dv1],[tb_y,tb_y+tb_h],lw=0.25,color="black")
     ax.plot([dv2,dv2],[tb_y,tb_y+tb_h],lw=0.25,color="black")
-    ax.text(tb_x+6, tb_y+tb_h-7, "DRAWING TITLE : SINGLE SITE LAYOUT PLAN", fontsize=F_LABEL)
+    ax.text(tb_x+6, tb_y+tb_h-7, "DRAWING TITLE : SINGLE SITE LAYOUT PLAN", fontsize=F_LABEL, weight="bold")
     ax.text(tb_x+6, tb_y+tb_h-13, f"SCALE : 1:{int(SCALE)}", fontsize=F_COND)
     ax.text(tb_x+6, tb_y+tb_h-19, f"TOTAL BUILT-UP AREA : {total_builtup:.2f} Sq.m", fontsize=F_COND)
     ax.text(tb_x+6, tb_y+tb_h-25, f"SY. NO. : {survey_no}", fontsize=F_COND)
@@ -217,13 +246,16 @@ if st.button("📄 Generate A3 PDF"):
     ax.text(dv1+6, tb_y+tb_h-19, f"EPID : {epid}", fontsize=F_COND)
     ax.text(dv2+6, tb_y+tb_h-25, f"WARD NO. : {ward_no}    CONSTITUENCY : {constituency}", fontsize=F_COND)
     ax.text(PAGE_W_MM-RIGHT-4, tb_y+3, "All Dimensions in metres.", fontsize=F_COND, ha="right")
+    ax.text(PAGE_W_MM - RIGHT - 4, tb_y - 5,
+            "Prepared by Anantha (Ankusha Project)", fontsize=F_COND, ha="right", style="italic")
 
-    # Save and display
+    # ---------------- EXPORT ----------------
     pdf_buf = io.BytesIO()
     with PdfPages(pdf_buf) as pdf:
         pdf.savefig(fig, bbox_inches="tight", orientation="landscape")
     pdf_buf.seek(0)
 
     st.download_button("⬇️ Download A3 PDF", data=pdf_buf,
-                       file_name=f"Single_Site_{survey_no or 'site'}.pdf", mime="application/pdf")
+                       file_name=f"Single_Site_{survey_no or 'site'}.pdf",
+                       mime="application/pdf")
     st.pyplot(fig)
