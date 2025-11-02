@@ -292,7 +292,7 @@ if st.button("📄 Generate A3 PDF"):
         "4. This single plot plan is issued vide number ***/***/***-******* dated : **.**.****."
     ]
 
-    gc_x, gc_y_top = INFO_X, lut_y - 80
+    gc_x, gc_y_top = INFO_X, lut_y
     ax.text(gc_x, gc_y_top, "GENERAL CONDITIONS OF APPROVAL",
             ha="left", va="bottom", fontsize=F_LABEL)
     cond_y = gc_y_top
@@ -334,6 +334,7 @@ if st.button("📄 Generate A3 PDF"):
                        file_name=f"Single_Site_{survey_no or 'site'}.pdf",
                        mime="application/pdf")
     st.pyplot(fig)
+
 
 
 
