@@ -293,7 +293,7 @@ if st.button("Generate A3 PDF"):
             kimg = make_keyplan_image(picked_latlon[0], picked_latlon[1], zoom=kp_zoom, tiles_radius=1, buffer_m=kp_radius_m)
             scaled = kimg.resize((int(key_w * 3), int(key_h * 3)), Image.LANCZOS)
             ax.imshow(scaled, extent=(key_x + 1, key_x + key_w - 1, key_y + 1, key_y + key_h - 1), zorder=1)
-            ax.text(key_x + key_w / 2, key_y - 6, f"{picked_latlon[0]:.6f}, {picked_latlon[1]:.6f}", fontsize=F_BODY, ha="center")
+            
         except Exception:
             ax.text(key_x + key_w / 2, key_y + key_h / 2, "Key plan (no preview)", ha="center", va="center", fontsize=F_BODY)
 
@@ -387,6 +387,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
