@@ -337,7 +337,7 @@ if st.button("Generate A3 PDF"):
     cond_y = gc_y_top - 6
     cond_spacing = 9
     for i, cond in enumerate(GENERAL_CONDITIONS):
-        wrapped = textwrap.fill(cond, width=60)
+        wrapped = textwrap.fill(cond, width=50)
         ax.text(gc_x + 2, cond_y - i * cond_spacing, wrapped, ha="left", va="top", fontsize=F_COND)
 
     # NOTE block
@@ -387,6 +387,7 @@ if st.button("Generate A3 PDF"):
         mime="application/pdf",
     )
     st.pyplot(fig)
+
 
 
 
